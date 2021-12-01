@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   joy
   roscpp
   rospy
-  rosserial
   rosserial_arduino
   sensor_msgs
   std_msgs
