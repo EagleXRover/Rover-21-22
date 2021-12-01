@@ -16,11 +16,11 @@ For this script a Xbox One control was used as an input device for the manipulat
 
 
 ## Requires:
-- ROS
-- rosduino
-- joy package
-- rosserial
-- roboclaw arduino library
+- [ROS](http://wiki.ros.org/ROS/Installation) (at the moment it works with both Melodic and Noetic versions)
+- [rosduino](http://wiki.ros.org/rosserial_arduino/Tutorials/Arduino%20IDE%20Setup) 
+- [joy package](http://wiki.ros.org/joy/Tutorials/ConfiguringALinuxJoystick)
+- [rosserial](http://wiki.ros.org/rosserial/Tutorials)
+- [roboclaw arduino library](https://resources.basicmicro.com/simple-arduino-control-of-the-roboclaw/) 
 
 ## Hardware used:
 - Arduino Mega
