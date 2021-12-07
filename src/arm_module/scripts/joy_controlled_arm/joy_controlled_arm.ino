@@ -1,7 +1,12 @@
 /* 
- * rosserial Subscriber Example
- * Blinks an LED on callback
- */
+ joy_controlled_arm
+ This sketch allows to use an arduino as a driver's control unit, 
+ while implementing ROS for the remote control via a joy controller.
+
+ It requires to have a topic with sensor_msgs/Joy type of data, but
+ it enables to get the data and transmit it to the roboclaw drivers 
+ via serial communication.
+*/
 
 #include <ros.h>
 #include <std_msgs/Float32.h>
