@@ -1,15 +1,13 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "std_msgs/Byte.h"
-#include "echoer.h"
-#include <sstream>
+
+#include "baseNode.h"
 
 int main(int argc, char **argv){
-  ros::init(argc, argv, "echoer");
+  ros::init(argc, argv, "Base");
   ros::NodeHandle n;
-  Echoer<std_msgs::String> echo_node(&n);
-  echo_node.setSubscriber("chatter");
-  echo_node.setPublisher("chatter_echo");
+  BaseNode base_node(&n, true);
+  base_node.setSubscriber("/joy");
+  base_node.setPublisher("/arm", "/wheels");
   ros::spin();
 
   return 0;

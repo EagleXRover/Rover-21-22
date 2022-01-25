@@ -9,7 +9,6 @@ sudo chmod 777 joy_install.sh
 ./arduino_install.sh
 ./joy_install.sh
 
-cd ~/catkin_ws
-catkin_make
+echo "Dont forget to run catkin_make on your <ws> folder."
 
 cd $curDir

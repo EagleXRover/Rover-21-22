@@ -24,19 +24,19 @@ catkin_install_python(PROGRAMS src/drivers_module/scripts/tst/pub.py
 
 add_executable(base_module src/base_module/base_module.cpp)
 target_link_libraries(base_module ${catkin_LIBRARIES})
-##add_dependencies(base_module eaglex_rover_generate_messages_cpp)
+# add_dependencies(base_module eaglex_rover_generate_messages_cpp)
 
 
-add_executable(talker src/drivers_module/scripts/tst/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
+# add_executable(talker src/drivers_module/scripts/tst/talker.cpp)
+# target_link_libraries(talker ${catkin_LIBRARIES})
 ##add_dependencies(talker eaglex_rover_generate_messages_cpp)
 
-add_executable(echoer src/drivers_module/scripts/tst/echoer.cpp)
-target_link_libraries(echoer ${catkin_LIBRARIES})
-##add_dependencies(echoer eaglex_rover_generate_messages_cpp)
+# add_executable(echoer src/drivers_module/scripts/tst/echoer.cpp)
+# target_link_libraries(echoer ${catkin_LIBRARIES})
+# ##add_dependencies(echoer eaglex_rover_generate_messages_cpp)
 
-add_executable(listener src/drivers_module/scripts/tst/listener.cpp)
-target_link_libraries(listener ${catkin_LIBRARIES})
+# add_executable(listener src/drivers_module/scripts/tst/listener.cpp)
+# target_link_libraries(listener ${catkin_LIBRARIES})
 ##add_dependencies(listener eaglex_rover_generate_messages_cpp)
 
 include_directories(
