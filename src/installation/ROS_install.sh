@@ -64,8 +64,8 @@ else
     sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
 fi
 
-sudo rosdep init
-sudo rosdep update
+rosdep init
+rosdep update
 
 
 cd $curDir
