@@ -12,4 +12,6 @@ git clone https://github.com/ros-drivers/rosserial.git
 cd ..
 catkin_make
 catkin_make install
+source ~/catkin_ws/install/setup.bash
+catkin_make
 cd $curDir
