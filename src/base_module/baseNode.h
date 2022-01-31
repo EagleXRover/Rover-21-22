@@ -4,10 +4,6 @@
 #include "std_msgs/UInt8.h"
 
 
-#include <iostream>
-#include <sstream>
-#include <string>
-
 #pragma once
 struct BaseMsg{
     uint8_t gripper_hand = 0x00;
@@ -27,13 +23,13 @@ BaseMsg::BaseMsg(const sensor_msgs::Joy::ConstPtr& inputMsg){
     if (inputMsg->buttons[0] || inputMsg->buttons[1]) gripper_hand = 0x02;
     gripper_hand += inputMsg->buttons[0];
 
-    // Horizontal right joystick for wrist roll->
-    if (inputMsg->axes[3] > 0.25 || inputMsg->axes[3] < -0.25) wrist_roll = 0x02;
-    wrist_roll += (inputMsg->axes[3] < -0.25);
-
     // Vertical right joystick for wrist pitch->
     if (inputMsg->axes[4] > 0.25 || inputMsg->axes[4] < -0.25) wrist_pitch = 0x02;
     wrist_pitch += (inputMsg->axes[4] < -0.25);
+
+    // Horizontal right joystick for wrist roll->
+    if (inputMsg->axes[3] > 0.25 || inputMsg->axes[3] < -0.25) wrist_roll = 0x02;
+    wrist_roll += (inputMsg->axes[3] < -0.25);
 
     // LB and RB for forearm pitch control->
     if (inputMsg->buttons[4] || inputMsg->buttons[5]) foreArm_pitch = 0x02;
@@ -60,8 +56,8 @@ void BaseMsg::output(std_msgs::UInt16 &arm, std_msgs::UInt8 &wheels){
     arm.data ^= uint16_t(baseArm_yaw) << 2*5;
     arm.data ^= uint16_t(upperArm_pitch) << 2*4;
     arm.data ^= uint16_t(foreArm_pitch) << 2*3;
-    arm.data ^= uint16_t(wrist_pitch) << 2*2;
-    arm.data ^= uint16_t(wrist_roll) << 2*1;
+    arm.data ^= uint16_t(wrist_roll) << 2*2;
+    arm.data ^= uint16_t(wrist_pitch) << 2*1;
     arm.data ^= uint16_t(gripper_hand) << 2*0;
 }
 
@@ -115,17 +111,13 @@ void BaseNode::callback(const sensor_msgs::Joy::ConstPtr& msg){
     std_msgs::UInt8 *Node1 = new std_msgs::UInt8();
     bMsg.output(*Node0, *Node1);
     if (consoleOutput){
-        std::stringstream ss;
-        ss << "I heard a joy... ";
-        ROS_INFO(ss.str().c_str());
+        ROS_INFO("I heard a joy... ");
     }
     publish(*Node0, *Node1);
 }
 void BaseNode::publish(std_msgs::UInt16 &arm, std_msgs::UInt8 &wheels){
     if (consoleOutput){
-        std::stringstream ss;
-        ss << "I echoed: [" << int(arm.data) << ", " << int(wheels.data) << "]"; 
-        ROS_INFO(ss.str().c_str());
+        ROS_INFO_STREAM("I echoed: [" << int(arm.data) << ", " << int(wheels.data) << "]");
     }
     pub[0].publish(arm);
     pub[1].publish(wheels);
