@@ -2,13 +2,37 @@
 
 # Calls all other installation scripts for the system to run the package.
 curDir=$(pwd)
-cd ~/catkin_make/src/eaglex_rover/src/installation
-sudo chmod 777 arduino_install.sh
-sudo chmod 777 joy_install.sh
+cd ~/catkin_ws/src/eaglex_rover/src/installation
+sudo chmod 777 ROS_install.sh joy_install.sh arduinoSerial_install.sh arduinoIde_install.sh 
 
-./arduino_install.sh
+./ROS_install.sh
 ./joy_install.sh
+./arduinoSerial_install.sh 
 
-echo "Dont forget to run catkin_make on your <ws> folder."
+
+while true 
+do
+    echo $lineDivider
+    read -p "Do you want to install Arduino INE [Y/N]: " ArduinoIDESelection
+    ArduinoIDESelection=${ArduinoIDESelection,,}
+    if [[ $ArduinoIDESelection != "" ]]
+    then 
+        if [[ $ArduinoIDESelection == "y" ]]
+        then 
+            ./arduinoIde_install.sh 
+            break; 
+        fi 
+        if [[ $ArduinoIDESelection == "n" ]]
+        then 
+            break; 
+        fi
+    fi
+done
+
+
+cd ~/catkin_ws
+catkin_make
+
+echo "Basic setup installed... Hope you enjoy"
 
 cd $curDir

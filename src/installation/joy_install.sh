@@ -1,19 +1,26 @@
 #!/bin/bash
 
 # Installs ROS joy on the system.
-sudo apt-get install ros-$ROS_DISTRO-joy
+curDir=$(pwd)
+sudo apt-get install ros-$ROS_DISTRO-joy -y
 
 # Configures joystick for correct usage.
 echo " "
 echo "---------------------------------------------"
 echo "---------------------------------------------"
 echo " "
-echo "Please connect your joystick and then press enter on keyboard."
-read joystick
+read -p "Please connect your joystick and then press enter on keyboard." joystick
 
 ls /dev/input/
-echo "select your joystick (Generally is jsX where X is a number): "
-read joystick
+while true
+do 
+    read -p "Select your joystick (Generally is jsX where X is a number): " joystick
+    if [[ $joystick != "" ]]
+    then
+        break
+    fi
+done
+echo "Selected Joy = $joystick"
 sudo chmod a+rw /dev/input/$joystick
 
 echo " "
@@ -32,3 +39,5 @@ echo "'rosparam set joy_node/dev ${output}/dev/input/${joystick}${output}'"
 echo "'rosrun joy joy_node'"
 echo "and in a new terminal run this last command: "
 echo "'rostopic echo joy'"
+
+cd $curDir
