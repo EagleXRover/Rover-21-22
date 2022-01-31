@@ -18,9 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package()
 
-catkin_install_python(PROGRAMS src/drivers_module/scripts/tst/pub.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# catkin_install_python(PROGRAMS src/drivers_module/scripts/tst/pub.py
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 add_executable(base_module src/base_module/base_module.cpp)
 target_link_libraries(base_module ${catkin_LIBRARIES})
