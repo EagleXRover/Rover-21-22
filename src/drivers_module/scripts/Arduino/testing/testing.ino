@@ -82,6 +82,8 @@ ros::Subscriber<std_msgs::Empty> timeOut_sub("/arduinoWatchdog", &timeOutSubscri
 
 // Ros callback/subscribe functions
 void armSubscriber(const std_msgs::UInt16& arm){
+    Serial.print("ARM : ");
+    Serial.println(arm.data);
     uint16_t armValue = arm.data;
 
     /* Servo instructions */
@@ -167,6 +169,7 @@ void wheelsSubscriber(const std_msgs::UInt8& wheels){
 
 }
 void timeOutSubscriber(const std_msgs::Empty&){
+    Serial.println("WATCHDOG HERE!");
     togglePin(LED2);
     ros_timer = millis();
 }
