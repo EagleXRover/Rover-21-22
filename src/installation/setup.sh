@@ -2,13 +2,13 @@
 
 # Calls all other installation scripts for the system to run the package.
 curDir=$(pwd)
+
+bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/main/src/installation/ROS_install.sh)
+bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/main/src/installation/package_install.sh)
+
+
 cd ~/catkin_ws/src/eaglex_rover/src/installation
 sudo chmod 777 ROS_install.sh joy_install.sh arduinoSerial_install.sh arduinoIde_install.sh 
-
-./ROS_install.sh
-./joy_install.sh
-./arduinoSerial_install.sh 
-
 
 while true 
 do

@@ -1,71 +1,70 @@
 #!/bin/bash
 
-# Installs ROS environment to the system.
-
+# Keeps the directory so it can return to it afterwards.
 curDir=$(pwd)
 
+# Defines which version of ROS to use.
+case $(lsb_release -r -s) in
+    "20.04" )
+        rosVersion="noetic";;
+    "18.04" )
+        rosVersion="melodic";;
+esac
+
+
+# Setup your computer to accept software from packages.ros.org. 
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt install curl -y # if you haven't already installed curl
+
+# Setup your keys.
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-sudo apt update -y
 
-lineDivider="--------------------------------------------------"
+# Installation.
+sudo apt update
 
-echo $lineDivider
-while true 
-do
-    read -p "Which ROS version do you want to install? (for example 'noetic'): " ROSVERSION
-    if [[ $ROSVERSION != "" ]]
-    then 
-        ROSVERSION=${ROSVERSION,,}
-        break; 
-    fi
-done
-
-while true 
-do
+menu="1"
+while [[ $menu == "1" ]]
+do 
     echo " "
-    echo $lineDivider
-    echo "How much of ROS you would like to install?"
+    echo "-------------------------------------------"
+    echo "How much of ROS would you like to install?"
     echo "0 - Bare Bones"
     echo "1 - Base"
     echo "2 - Full"
-    read -p "Selection: " ROSIZE
-    if [[ $ROSIZE != "" ]]
-    then 
-        if [[ $ROSIZE == "0" ]]
-        then 
-            ROSIZE="ros-base"
-            break; 
-        fi 
-        if [[ $ROSIZE == "1" ]]
-        then 
-            ROSIZE="desktop"
-            break; 
-        fi 
-        if [[ $ROSIZE == "2" ]]
-        then 
-            ROSIZE="desktop-full"
-            break; 
-        fi 
-    fi
+    read -p "Selection: " rosType
+    case $rosType in
+        0 )
+            rosType="ros-base"
+            menu="0";;
+        1 ) 
+            rosType="desktop"
+            menu="0";;
+        2 )
+            rosType="desktop-full"
+            menu="0";;
+    esac
 done
 
-sudo apt install ros-$ROSVERSION-$ROSIZE -y
-source /opt/ros/$ROSVERSION/setup.bash
-echo "source /opt/ros/$ROSVERSION/setup.bash" >> ~/.bashrc
+sudo apt install ros-$rosVersion-$rosType -y
+
+
+# Sourcing.
+echo "# ROS SOURCING" >> ~/.bashrc
+echo "source /opt/ros/$rosVersion/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
-UbuntuRelease=$(lsb_release -r -s)
-if [[ ($UbuntuRelease < 20)]]
-then
-    sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential -y
-else
-    sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
-fi
 
-rosdep init
+# Initializing.
+case $rosVersion in
+    "melodic" )
+        sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential -y
+        sudo apt install python-rosdep;;
+    "noetic" )
+        sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
+        sudo apt install python3-rosdep;;
+esac
+
+sudo rosdep init
 rosdep update
 
-
+# Return to original directory.
 cd $curDir
