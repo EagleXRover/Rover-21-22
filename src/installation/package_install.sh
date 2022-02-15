@@ -3,14 +3,22 @@
 # Keeps the directory so it can return to it afterwards.
 curDir=$(pwd)
 
-mkdir -p ~/catkin_ws/src
+
+if [ !-d "~/catkin_ws/src"]
+then
+    mkdir -p ~/catkin_ws/src
+fi
 cd ~/catkin_ws/
 catkin_make
 source devel/setup.bash
 
-
-cd ~/catkin_ws/src
-git clone https://github.com/EagleXRover/eaglex_rover.git
+if [ !-d "~/catkin_ws/src/eaglex_rover"]
+then
+    cd ~/catkin_ws/src
+    git clone https://github.com/EagleXRover/eaglex_rover.git
+fi
+cd ~/catkin_ws/src/eaglex_rover
+git switch Package
 
 cd ~/catkin_ws/src/eaglex_rover/src/installation
 

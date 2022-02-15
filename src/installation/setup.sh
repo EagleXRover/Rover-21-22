@@ -3,9 +3,16 @@
 # Calls all other installation scripts for the system to run the package.
 curDir=$(pwd)
 
-bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/main/src/installation/ROS_install.sh)
-bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/main/src/installation/package_install.sh)
+case ${ROS_DISTRO,,} in
+    "noetic" )
+        echo "ROS ${ROS_DISTRO,,} already installed";;
+    "melodic" )
+        echo "ROS ${ROS_DISTRO,,} already installed";;
+    "" )
+        bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/Package/src/installation/ROS_install.sh);;
+esac
 
+bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/Package/src/installation/package_install.sh)
 
 cd ~/catkin_ws/src/eaglex_rover/src/installation
 sudo chmod 777 ROS_install.sh joy_install.sh arduinoSerial_install.sh arduinoIde_install.sh 

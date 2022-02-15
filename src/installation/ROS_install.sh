@@ -24,7 +24,7 @@ sudo apt update
 menu="1"
 while [[ $menu == "1" ]]
 do 
-    echo " "
+    echo
     echo "-------------------------------------------"
     echo "How much of ROS would you like to install?"
     echo "0 - Bare Bones"

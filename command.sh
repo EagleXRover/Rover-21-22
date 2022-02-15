@@ -1,34 +1,30 @@
 #!/bin/bash
 
-case $(lsb_release -r -s) in
-    "20.04" )
-        rosVersion="noetic";;
-    "18.04" )
-        rosVersion="melodic";;
-esac
+joySetup(){
+    echo "Hello World!"
+}
 
-menu="1"
-while [[ $menu == "1" ]]
-do 
-    echo " "
-    echo "-------------------------------------------"
-    echo "How much of ROS would you like to install?"
-    echo "0 - Bare Bones"
-    echo "1 - Base"
-    echo "2 - Full"
-    read -p "Selection: " rosType
-    case $rosType in
-        0 )
-            rosType="ros-base"
-            menu="0";;
-        1 ) 
-            rosType="desktop"
-            menu="0";;
-        2 )
-            rosType="desktop-full"
-            menu="0";;
-    esac
-done
+DIR="$(pwd)"
+if [ !-d "~/catkin_ws/src"]; then
+   echo "WITHOUT CATKIN WORKSPACE"
+else
+   echo "CATKIN WORKSPACE AVAILABLE"
+fi
 
-echo $rosVersion
-echo $rosType
+#menu="1"
+#while [[ $menu == "1" ]]
+#do
+#    read -p "Print? [Y/N] : " Selection
+#    case ${Selection,,} in
+#        "y" )
+#            joySetup
+#            menu="0";;
+#        "n" )
+#            menu="0";;
+#    esac
+#done
+#
+#[ -d "~/catkin_ws" ] && echo "Directory ~/catkin_ws exists."
+#
+#
+#if [[ -d "~/catkin_ws" ]]; then echo "hi"; else echo "ih"; fi
