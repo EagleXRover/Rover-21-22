@@ -3,6 +3,28 @@
 # Calls all other installation scripts for the system to run the package.
 curDirSetup=$(pwd)
 
+# Solves the problem of changing time when changing OS.
+timedatectl set-local-rtc 1
+
+# Downloads the package as to be able to work on it.
+if [ !-d "~/catkin_ws/src"]
+then
+    mkdir -p ~/catkin_ws/src
+fi
+
+if [ !-d "~/catkin_ws/src/eaglex_rover"]
+then
+    cd ~/catkin_ws/src
+    git clone https://github.com/EagleXRover/eaglex_rover.git
+fi
+
+cd ~/catkin_ws/src/eaglex_rover/
+git switch Package
+cd ~/catkin_ws/src/eaglex_rover/src/installation
+sudo chmod 777 setup.sh ROS_install.sh joy_install.sh package_install.sh arduinoSerial_install.sh arduinoIde_install.sh teensyduino_install.sh
+
+
+# Searches for ROS distro on the system, and if there is non, installs the respective distro.
 case ${ROS_DISTRO,,} in
     "noetic" )
         echo "ROS ${ROS_DISTRO,,} already installed";;
@@ -12,6 +34,7 @@ case ${ROS_DISTRO,,} in
         bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/Package/src/installation/ROS_install.sh);;
 esac
 
+# Searches for the package on the system, if it's not on the system, it procedes to install it.
 bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/Package/src/installation/package_install.sh)
 
 cd ~/catkin_ws/src/eaglex_rover/src/installation

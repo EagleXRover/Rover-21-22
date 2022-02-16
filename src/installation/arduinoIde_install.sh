@@ -4,7 +4,6 @@
 curDirArduinoIDE=$(pwd)
 cd ~
 
-
 # Installs arduino IDE on the system.
 echo "--------------------------------------------------"
 echo "Installing arduino IDE"
@@ -14,8 +13,8 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Download Arduino IDE and extract
-mkdir arduino
-cd arduino/
+mkdir ~/arduino
+cd ~/arduino/
 
 menu="1"
 while [[ $menu == "1" ]]
@@ -44,8 +43,7 @@ do
     esac
 done
 
-cd
-
+sudo rm -r "arduino-1.8.15-linux${systemType}.tar.xz"
 wget "https://downloads.arduino.cc/arduino-1.8.15-linux${systemType}.tar.xz"
 
 # Extract the tar.xz file:
@@ -53,7 +51,7 @@ tar -xvf ./arduino-1.8.15-linux64.tar.xz
 
 
 # Install Arduino using the installer script
-cd arduino-1.8.15/
+cd ~/arduino/arduino-1.8.15/
 sudo ./install.sh
 
 # Adding user to dialout group
@@ -68,7 +66,7 @@ do
     case ${selection,,} in
     "y" )
         cd ~/arduino/arduino-1.8.15/libraries
-        rm -rf ros_lib
+        sudo rm -rf ros_lib
         rosrun rosserial_arduino make_libraries.py .
         echo "Arduino ROS lib installed successfully."
         menu="0";;
@@ -84,18 +82,23 @@ do
     read -p "Install Teensyduino? [Y/N] : " selection
     case ${selection,,} in
     "y" )
-        cd
-
+        cd ~/arduino/
+        sudo rm -r "TeensyduinoInstall.linux${systemType}"
         wget "https://www.pjrc.com/teensy/td_154/TeensyduinoInstall.linux${systemType}"
+        sudo rm -r "00-teensy.rules"
         wget "https://www.pjrc.com/teensy/00-teensy.rules"
         
         sudo cp "00-teensy.rules" "/etc/udev/rules.d/"
+        
         tar -xf "arduino-1.8.15-linux${systemType}.tar.xz"
+        chmod 755 "TeensyduinoInstall.linux${systemType}";
         
-        chmod 755 "TeensyduinoInstall.linux${systemType}"
-        
-        "./TeensyduinoInstall.linux${systemType}" --dir=~/arduino/arduino-1.8.15
+        cd ~/arduino/arduino-1.8.15
+
+        ~/arduino/TeensyduinoInstall.linux${systemType} --dir="."
+
         cd ~/arduino/arduino-1.8.15/hardware/teensy/avr/cores/teensy4
+        
         make
         echo "Teesyduino installed successfully"
 
@@ -104,6 +107,7 @@ do
         menu="0";;
     esac
 done
+
 
 # Return to previos directory
 cd ${curDirArduinoIDE}

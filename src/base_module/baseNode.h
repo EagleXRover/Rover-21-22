@@ -44,11 +44,11 @@ BaseMsg::BaseMsg(const sensor_msgs::Joy::ConstPtr& inputMsg){
     baseArm_yaw += (inputMsg->axes[6] > 0.25);
 
     // Left joystick for wheels movements->
-    float x = -8 * inputMsg->axes[0];
-    float y = 8 * inputMsg->axes[1];
+    float x = -inputMsg->axes[0];
+    float y = inputMsg->axes[1];
     speed_wheels = 0;
-    speed_wheels += uint8_t(8 + (x+y)*0.7071067811865) << 4;
-    speed_wheels += uint8_t(8 + (y-x)*0.7071067811865);
+    speed_wheels += uint8_t(8 + 7*(x+y)*0.7071067811865) << 4;
+    speed_wheels += uint8_t(8 + 7*(y-x)*0.7071067811865);
 }
 
 void BaseMsg::output(std_msgs::UInt16 &arm, std_msgs::UInt8 &wheels){
