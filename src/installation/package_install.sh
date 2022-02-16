@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Keeps the directory so it can return to it afterwards.
-curDir=$(pwd)
+curDirPackage=$(pwd)
 
 
 if [ !-d "~/catkin_ws/src"]
@@ -22,11 +22,11 @@ git switch Package
 
 cd ~/catkin_ws/src/eaglex_rover/src/installation
 
-sudo chmod 777 ROS_install.sh joy_install.sh arduinoSerial_install.sh arduinoIde_install.sh 
+sudo chmod 777 setup.sh ROS_install.sh joy_install.sh package_install.sh arduinoSerial_install.sh arduinoIde_install.sh teensyduino_install.sh
 
 ./joy_install.sh
 ./arduinoSerial_install.sh
 
 
 # Return to original directory.
-cd $curDir
+cd $curDirPackage

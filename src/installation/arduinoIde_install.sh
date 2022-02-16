@@ -16,7 +16,37 @@ sudo apt-get upgrade -y
 # Download Arduino IDE and extract
 mkdir arduino
 cd arduino/
-wget https://downloads.arduino.cc/arduino-1.8.15-linux64.tar.xz
+
+menu="1"
+while [[ $menu == "1" ]]
+do
+    echo 
+    echo "-------------------------------------"
+    echo "Which architecture does the device use?"
+    echo "0 - x86 / 32 bit"
+    echo "1 - x64 / 64 bit"
+    echo "2 - ARM32 / Raspberry Pi"
+    echo "3 - AARCH64 / Jetson TX2"
+    read -p "Selection: " systemType
+    case $systemType in
+        0 ) 
+            systemType="32"
+            menu="0";;
+        1 ) 
+            systemType="64"
+            menu="0";;
+        2 ) 
+            systemType="arm"
+            menu="0";;
+        3 ) 
+            systemType="aarch64"
+            menu="0";;
+    esac
+done
+
+cd
+
+wget "https://downloads.arduino.cc/arduino-1.8.15-linux${systemType}.tar.xz"
 
 # Extract the tar.xz file:
 tar -xvf ./arduino-1.8.15-linux64.tar.xz
@@ -54,8 +84,21 @@ do
     read -p "Install Teensyduino? [Y/N] : " selection
     case ${selection,,} in
     "y" )
-        cd ~/catkin_ws/src/eaglex_rover/src/install
-        ./teensyduino_install.sh
+        cd
+
+        wget "https://www.pjrc.com/teensy/td_154/TeensyduinoInstall.linux${systemType}"
+        wget "https://www.pjrc.com/teensy/00-teensy.rules"
+        
+        sudo cp "00-teensy.rules" "/etc/udev/rules.d/"
+        tar -xf "arduino-1.8.15-linux${systemType}.tar.xz"
+        
+        chmod 755 "TeensyduinoInstall.linux${systemType}"
+        
+        "./TeensyduinoInstall.linux${systemType}" --dir=~/arduino/arduino-1.8.15
+        cd ~/arduino/arduino-1.8.15/hardware/teensy/avr/cores/teensy4
+        make
+        echo "Teesyduino installed successfully"
+
         menu="0";;
     "n" )
         menu="0";;

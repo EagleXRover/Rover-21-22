@@ -2,7 +2,32 @@
 
 curDirTeensyduino=$(pwd)
 
-systemType="64"
+menu="1"
+while [[ $menu == "1" ]]
+do
+    echo 
+    echo "-------------------------------------"
+    echo "Which architecture does the device use?"
+    echo "0 - x86 / 32 bit"
+    echo "1 - x64 / 64 bit"
+    echo "2 - ARM32 / Raspberry Pi"
+    echo "3 - AARCH64 / Jetson TX2"
+    read -p "Selection: " systemType
+    case $systemType in
+        0 ) 
+            systemType="32"
+            menu="0";;
+        1 ) 
+            systemType="64"
+            menu="0";;
+        2 ) 
+            systemType="arm"
+            menu="0";;
+        3 ) 
+            systemType="aarch64"
+            menu="0";;
+    esac
+done
 
 cd
 

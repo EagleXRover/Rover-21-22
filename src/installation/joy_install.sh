@@ -1,9 +1,7 @@
 #!/bin/bash
 
-joySetup(){}
-
 # Installs ROS joy on the system.
-curDir=$(pwd)
+curDirJoy=$(pwd)
 sudo apt-get install ros-$ROS_DISTRO-joy -y
 
 # Configures joystick for correct usage.
@@ -35,4 +33,4 @@ rosparam set joy_node/dev "/dev/input/$joystick"
 
 echo -e "\nROS Joy installed and setup succesfully."
 
-cd $curDir
+cd $curDirJoy

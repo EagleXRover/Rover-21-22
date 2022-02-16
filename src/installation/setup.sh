@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calls all other installation scripts for the system to run the package.
-curDir=$(pwd)
+curDirSetup=$(pwd)
 
 case ${ROS_DISTRO,,} in
     "noetic" )
@@ -15,7 +15,6 @@ esac
 bash <(curl -s https://raw.githubusercontent.com/EagleXRover/eaglex_rover/Package/src/installation/package_install.sh)
 
 cd ~/catkin_ws/src/eaglex_rover/src/installation
-sudo chmod 777 ROS_install.sh joy_install.sh arduinoSerial_install.sh arduinoIde_install.sh 
 
 while true 
 do
@@ -42,4 +41,4 @@ catkin_make
 
 echo "Basic setup installed... Hope you enjoy"
 
-cd $curDir
+cd $curDirSetup

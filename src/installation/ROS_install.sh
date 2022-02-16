@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Keeps the directory so it can return to it afterwards.
-curDir=$(pwd)
+curDirROS=$(pwd)
 
 # Defines which version of ROS to use.
 case $(lsb_release -r -s) in
@@ -67,4 +67,4 @@ sudo rosdep init
 rosdep update
 
 # Return to original directory.
-cd $curDir
+cd $curDirROS
