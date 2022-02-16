@@ -38,6 +38,9 @@ done
 
 cd ~/catkin_ws
 catkin_make
+catkin_make install
+source ~/catkin_ws/install/setup.bash
+catkin_make
 
 echo "Basic setup installed... Hope you enjoy"
 

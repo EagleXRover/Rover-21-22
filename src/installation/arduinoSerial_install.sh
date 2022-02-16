@@ -9,7 +9,7 @@ sudo apt-get install ros-$ROS_DISTRO-rosserial -y
 curDirArduinoSerial=$(pwd)
 cd ~/catkin_ws/src
 git clone https://github.com/ros-drivers/rosserial.git
-cd ..
+cd ~/catkin_ws
 catkin_make
 catkin_make install
 source ~/catkin_ws/install/setup.bash
