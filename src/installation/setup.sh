@@ -7,12 +7,12 @@ curDirSetup=$(pwd)
 timedatectl set-local-rtc 1
 
 # Downloads the package as to be able to work on it.
-if [ !-d "~/catkin_ws/src"]
+if [ ! -d "~/catkin_ws/src" ]
 then
     mkdir -p ~/catkin_ws/src
 fi
 
-if [ !-d "~/catkin_ws/src/eaglex_rover"]
+if [ ! -d "~/catkin_ws/src/eaglex_rover" ]
 then
     cd ~/catkin_ws/src
     git clone https://github.com/EagleXRover/eaglex_rover.git
