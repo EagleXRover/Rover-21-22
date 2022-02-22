@@ -148,7 +148,6 @@ ros::NodeHandle nh;
 ros::Subscriber<std_msgs::UInt16> sub_motors_wheels(topic_motors_wheels, &motorsWheelsCb);
 ros::Subscriber<std_msgs::UInt8> sub_motors_arm(topic_motors_arm, &motorsArmCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_arm_wristPitch (topic_servo_arm_wristPitch, &servoArmWristPitchCb);
-ros::Subscriber<std_msgs::UInt8> sub_servo_arm_gripper (topic_servo_arm_gripper, &servoArmGripperCb);
 ros::Subscriber<std_msgs::UInt8> sub_motors_science (topic_motors_science, &motorsScienceCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_microscope (topic_servo_science_microscope, &servoScienceMicroscopeCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_exterior (topic_servo_science_dispenser_exterior, &servoScienceDispenserExteriorCb);
@@ -243,7 +242,6 @@ void setupRos(void){
     nh.subscribe(sub_motors_wheels);
     nh.subscribe(sub_motors_arm);
     nh.subscribe(sub_servo_arm_wristPitch);
-    nh.subscribe(sub_servo_arm_gripper);
     nh.subscribe(sub_motors_science);
     nh.subscribe(sub_servo_science_microscope);
     nh.subscribe(sub_servo_science_dispenser_exterior);
@@ -256,7 +254,6 @@ void setup(void){
     setupGPIO();
     setupSerials();
     setupEthernet();
-    setupDrivers();
     delay(1000);
     setupRos();
     watchPrevTime = millis();
@@ -279,7 +276,6 @@ void loop(void){
     }
 
     nh.spinOnce();
-    delay(1);
 }
 
 // Callback function for wheels motors.
