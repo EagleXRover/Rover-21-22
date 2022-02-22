@@ -79,7 +79,7 @@ void analogController(void);
 byte mac[6] = {                         // Ethernet MAC adress.
     0x80, 0x69, 0x69, 0x69, 0x69, 0x09 
 };   
-IPAddress server(10,0,0,20);         // Master IP.
+IPAddress server(10,0,0,5);             // Master IP.
 const uint16_t serverPort = 11411;      // Master rosserial socket server port.
 
 // Serial Ports rename.
@@ -137,8 +137,6 @@ RoboClaw RoboClaw_Arm_Science = RoboClaw(&Serial_Arm_Science, Timeout_Arm_Scienc
 #define topic_servo_science_dispenser_interior  "/science/servos/dispenser/interior"
 
 #define topic_watchdog                          "/watchdog_topic"
-
-
 
 /* Global variables. */
 // ROS NodeHandler.
@@ -279,7 +277,7 @@ void loop(void){
     }
 
     nh.spinOnce();
-    delay(1);
+    delay(10);
 }
 
 // Callback function for wheels motors.
@@ -296,13 +294,14 @@ void motorsWheelsCb( const std_msgs::UInt16 &msg){
 void motorsArmCb( const std_msgs::UInt8 &msg){
     uint8_t data = msg.data;
     for (uint8_t i = 0; i < Motors_Arm_Amount; i++){
-        if (data & (0x02 << (Motors_Arm_Amount - 1 - i))){
-            if (data & (0x01 << (Motors_Arm_Amount - 1 - i)))
+        if (data & 0x80){
+            if (data & 0x40)
                 RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Arm[i], Motors_HaltSpeed + Motors_MovementSpeedDiff);
             else 
                 RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Arm[i], Motors_HaltSpeed - Motors_MovementSpeedDiff);
         } else 
             RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Arm[i], Motors_HaltSpeed);
+        data = data << 2;
     }
 }
 

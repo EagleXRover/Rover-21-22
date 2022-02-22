@@ -40,7 +40,7 @@
 #define topic_servo_science_dispenser_exterior  "/science/servos/dispenser/exterior"
 #define topic_servo_science_dispenser_interior  "/science/servos/dispenser/interior"
 
-#define topic_queue_size    3
+#define topic_queue_size    1
 
 const uint8_t limit_servo_arm_wristpitch[2] = {45, 135};
 const uint8_t limit_servo_arm_gripper[2] = {45, 135};
