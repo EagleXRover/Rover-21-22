@@ -1,0 +1,100 @@
+/* Definitions of libraries */
+#include <SPI.h>
+#include <Ethernet.h>
+
+/* Definitions of constants */ 
+#undef LED_BUILTIN
+#define LED_NOTIFICATION 27          // Built-in Led.
+#define LED_NOTIFICATION1 26     // Notification Led.
+
+#define CS_Ethernet 24          // Chip Select pin for Ethernet module.
+#define RST_Ethernet 25         // RST pin for the Ethernet modules.
+
+#define Serial_USB Serial       // Serial pins for the USB.
+#define Serial_Arm Serial2      // Serial pins for the arm.
+#define Serial_Wheels Serial3   // Serial pins for the wheels.
+
+#define Baudrate_USB 38400      // Baudrate with the Serial_USB.
+#define Bautrate_Arm 38400      // Baudrate with the Serial_Arm.
+#define Baudrate_Wheels 38400   // Baudrate with the Serial_Wheels.
+
+#define LED_Toggle_millis 100   // Time before the led toggles in ms. 
+
+// Reboot constants
+#define CPU_RESTART_ADDR (uint32_t *)0xE000ED0C
+#define CPU_RESTART_VAL 0x5FA0004
+#define CPU_RESTART (*CPU_RESTART_ADDR = CPU_RESTART_VAL)
+
+
+// MAC adress of the ethernet module.
+byte mac[6] = {0x80, 0x69, 0x69, 0x69, 0x69, 0x09 };
+
+/* Global variables */
+unsigned long prevTime;
+unsigned long newTime;
+
+/* Funcitons prototyping */
+void setup(void);
+void loop(void);
+void togglePin(uint8_t pin);
+void reboot(void);
+
+/* Function definitions */
+void setup(void){
+    pinMode(RST_Ethernet, OUTPUT);
+    digitalWrite(RST_Ethernet, LOW);
+    digitalWrite(RST_Ethernet, HIGH);
+
+    pinMode(LED_NOTIFICATION, OUTPUT);
+    pinMode(LED_NOTIFICATION1, OUTPUT);
+    
+    digitalWrite(LED_NOTIFICATION, HIGH);
+    digitalWrite(LED_NOTIFICATION1, LOW);
+
+    Serial_USB.begin(Baudrate_USB);
+    //while (!Serial_USB);
+    delay(100);
+
+    Ethernet.init(CS_Ethernet);
+
+    Serial_USB.println("\nInitialize Ethernet with DHCP :");
+
+    if (Ethernet.begin(mac, 6000) == 0){
+        Serial_USB.println("Failed to configure Ethernet using DHCP...");
+        if (Ethernet.hardwareStatus() == EthernetNoHardware){
+            Serial_USB.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+        } else if (Ethernet.linkStatus() == LinkOFF) {
+            Serial_USB.println("Ethernet cable is not connected.");
+        }
+        // No point on continuing, so restart and attempt again.
+        reboot();
+    }
+    digitalWrite(LED_NOTIFICATION, LOW);
+    Serial_USB.print("My IP address is : ");
+    Serial_USB.println(Ethernet.localIP());
+    prevTime = millis();
+}
+
+void loop(void){
+    newTime = millis();
+    if ((newTime - prevTime) > LED_Toggle_millis){
+        prevTime = newTime;
+        togglePin(LED_NOTIFICATION1);
+    }
+    if (Ethernet.maintain()%2 || Ethernet.linkStatus() == LinkOFF){
+        reboot();
+    }
+
+}
+
+// Toogles the given pin to the opposite value.
+void togglePin(uint8_t pin){
+    digitalWrite(pin, !digitalRead(pin));
+}
+
+// Executes a software reset on the teensy.
+void reboot(void){
+    Serial_USB.println("REBOOTING...");
+    //while(true);
+    CPU_RESTART;
+}
