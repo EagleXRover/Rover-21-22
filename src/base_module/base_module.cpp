@@ -1,23 +1,24 @@
 #include "ros/ros.h"
 #include "std_msgs/Empty.h"
 
-#include "baseNode.h"
+#include "base_node.h"
+
+#define nodeName_Base "Base node"
+#define topicName_Joy "/joy"
+#define topicName_Watchdog "/watchdogTopic"
 
 int main(int argc, char **argv){
-  ros::init(argc, argv, "Base");
-  ros::NodeHandle n;
-  BaseNode base_node(&n, true);
-  base_node.setSubscriber("/joy");
-  base_node.setPublisher("/drivers/arm", "/drivers/wheels");
-  ros::Publisher arduinoWatchdog = n.advertise<std_msgs::Empty>("/arduinoWatchdog", 3, false);
-  std_msgs::Empty arduinoWatchdogMsg;
+    ros::init(argc, argv, nodeName_Base);
+    ros::NodeHandle n;
 
-  
-  ros::Rate loop_rate(10);
-  while(ros::ok()){
-    arduinoWatchdog.publish(arduinoWatchdogMsg);
-    ros::spinOnce();
-    // loop_rate.sleep();
-  }
-  return 0;
+    
+    ros::Publisher Watchdog = n.advertise<std_msgs::Empty>(topicName_Watchdog, topic_queue_size, true);
+    std_msgs::Empty WatchdogMsg;
+
+    //ros::Rate loop_rate(10);
+    while (ros::ok()){
+        Watchdog.publish(WatchdogMsg);
+        ros::spinOnce();
+        // loop_rate.sleep()
+    }
 }
