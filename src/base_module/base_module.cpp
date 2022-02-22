@@ -3,22 +3,23 @@
 
 #include "base_node.h"
 
-#define nodeName_Base "Base node"
+#define nodeName_Base "base_node"
 #define topicName_Joy "/joy"
-#define topicName_Watchdog "/watchdogTopic"
+#define topicName_Watchdog "/watchdog_topic"
 
 int main(int argc, char **argv){
     ros::init(argc, argv, nodeName_Base);
     ros::NodeHandle n;
 
-    
-    ros::Publisher Watchdog = n.advertise<std_msgs::Empty>(topicName_Watchdog, topic_queue_size, true);
-    std_msgs::Empty WatchdogMsg;
+    BaseNode base_node(&n, topicName_Joy);
 
-    //ros::Rate loop_rate(10);
+    ros::Publisher watchdog = n.advertise<std_msgs::Empty>(topicName_Watchdog, 3, true);
+    std_msgs::Empty watchdogMsg;
+
+    ros::Rate loop_rate(10);
     while (ros::ok()){
-        Watchdog.publish(WatchdogMsg);
+        watchdog.publish(watchdogMsg);
         ros::spinOnce();
-        // loop_rate.sleep()
+        loop_rate.sleep();
     }
 }

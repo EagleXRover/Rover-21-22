@@ -28,17 +28,17 @@
 
 
 
-// #define topic_motors_wheelsLeft                 "/Wheels/Drivers/Left"
-// #define topic_motors_wheelsRight                "/Wheels/Drivers/Right"
-#define topic_motors_wheels                     "/Wheels/Drivers"
-// #define topic_motors_armScience                 "/ArmScience/Drivers"
-#define topic_motors_arm                        "/Arm/Drivers"
-#define topic_servo_arm_wristPitch              "/Arm/Servos/Wrist"
-#define topic_servo_arm_gripper                 "/Arm/Servos/Gripper"
-#define topic_motors_science                    "/Science/Drivers"
-#define topic_servo_science_microscope          "/Science/Servos/Microscope"
-#define topic_servo_science_dispenser_exterior  "/Science/Servos/Dispenser/Exterior"
-#define topic_servo_science_dispenser_interior  "/Science/Servos/Dispenser/Interior"
+// #define topic_motors_wheelsLeft                 "/wheels/drivers/left"
+// #define topic_motors_wheelsRight                "/wheels/drivers/right"
+#define topic_motors_wheels                     "/wheels/drivers"
+// #define topic_motors_armScience                 "/arm_science/drivers"
+#define topic_motors_arm                        "/arm/drivers"
+#define topic_servo_arm_wristPitch              "/arm/servos/wrist"
+#define topic_servo_arm_gripper                 "/arm/servos/gripper"
+#define topic_motors_science                    "science/drivers"
+#define topic_servo_science_microscope          "science/servos/microscope"
+#define topic_servo_science_dispenser_exterior  "science/servos/dispenser/exterior"
+#define topic_servo_science_dispenser_interior  "science/servos/dispenser/interior"
 
 #define topic_queue_size    3
 
