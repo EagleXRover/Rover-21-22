@@ -56,7 +56,7 @@ void analogController(void);
 
 /* Definitions of constants. */ 
 // Timeout Constants in ms.
-#define Timeout_Ethernet 7500           // Timeout for Ethernet connection.
+#define Timeout_Ethernet 30000           // Timeout for Ethernet connection.
 #define Timeout_Wheels 10000            // Timeout for Wheels drivers.
 #define Timeout_Arm_Science 10000       // Timeout for Arm & Science drivers.
 #define Timeout_Watchdog 3500
@@ -79,7 +79,7 @@ void analogController(void);
 byte mac[6] = {                         // Ethernet MAC adress.
     0x80, 0x69, 0x69, 0x69, 0x69, 0x09 
 };   
-IPAddress server(10,0,0,5);             // Master IP.
+IPAddress server(10,0,0,20);            // Master IP.
 const uint16_t serverPort = 11411;      // Master rosserial socket server port.
 
 // Serial Ports rename.
