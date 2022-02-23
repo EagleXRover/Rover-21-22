@@ -13,7 +13,7 @@ int main(int argc, char **argv){
 
     BaseNode base_node(&n, topicName_Joy);
 
-    ros::Publisher watchdog = n.advertise<std_msgs::Empty>(topicName_Watchdog, 3, true);
+    ros::Publisher watchdog = n.advertise<std_msgs::Empty>(topicName_Watchdog, topic_queue_size, true);
     std_msgs::Empty watchdogMsg;
 
     ros::Rate loop_rate(10);
