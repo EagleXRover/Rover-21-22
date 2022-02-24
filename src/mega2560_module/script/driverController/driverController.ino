@@ -303,7 +303,7 @@ void loop(void){
 // Callback function for wheels motors.
 void motorsWheelsCb( const std_msgs::UInt16 &msg){
     int left_speed = msg.data >> 8;
-    int right_speed = msg.data & 0xFF;
+    int right_speed = msg.data & 0x00FF;
     for(uint8_t i = 0; i < Motors_Wheels_Amount_PerSide; i++){
         RoboClaw_Wheels.ForwardBackwardM1(Motors_Wheels_Left[i], left_speed);
         RoboClaw_Wheels.ForwardBackwardM1(Motors_Wheels_Right[i], right_speed);

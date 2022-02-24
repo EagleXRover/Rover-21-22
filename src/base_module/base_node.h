@@ -6,6 +6,9 @@
 #include "std_msgs/UInt16.h"
 #include "std_msgs/UInt8.h"
 
+#define scale_wheelsSpeed 0.5
+
+
 #define LEFT_JOYSTICK_H     axes[0]
 #define LEFT_JOYSTICK_V     axes[1]
 #define LEFT_TRIGGER        axes[2]
@@ -110,8 +113,8 @@ void BaseNode::callback(const sensor_msgs::Joy::ConstPtr&msg){
     float x = -msg->axes[0];
     float y = msg->axes[1];
     aux_uint16 = 0x4040; 
-    aux_uint16 += uint16_t(0x3F * (x+y) * 0.7071067811865) << 8;
-    aux_uint16 += uint16_t(0x3F * (x+y) * 0.7071067811865);
+    aux_uint16 += uint16_t(0x3F * scale_wheelsSpeed * (x+y) * 0.7071067811865) << 8;
+    aux_uint16 += uint16_t(0x3F * scale_wheelsSpeed * (-x+y) * 0.7071067811865);
     if (speed_motors_Wheels != aux_uint16){
         speed_motors_Wheels = aux_uint16;
         aux_msg_uint16.data = speed_motors_Wheels;
