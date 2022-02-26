@@ -7,14 +7,16 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include "RoboClaw.h"
+#include <Servo.h>
 
 #define ROSSERIAL_ARDUINO_TCP // To use the TCP version of rosserial_arduino.
 
 /* Include ROS components. */
 #include <ros.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/UInt8.h>
-#include "std_msgs/Empty.h"
+#include <std_msgs/Empty.h>
 
 /* Functions prototyping. */
 // Special Functions.
@@ -27,6 +29,7 @@ void togglePin(uint8_t);
 void setupDrivers(void);
 void setupEthernet(void);
 void setupSerials(void);
+void setupServos(void);
 void setupGPIO(void);
 void setupRos(void);
 
@@ -49,9 +52,12 @@ void watchdogFunction(void);
 
 void haltMovements(void);
 
+// Sensing Functions.
+void GPSPublisher(void);
+
 // Testing Functions.
 
-void analogController(void);
+// void analogController(void);
 
 
 /* Definitions of constants. */ 
@@ -94,13 +100,22 @@ const uint16_t serverPort = 11411;      // Master rosserial socket server port.
 #define Baudrate_Wheels 38400           // Baudrate with the Serial_Wheels.
 #define Baudrate_Sensors_UART 9600      // Baudrate with the Serial_Sensors_UART.
 
-// Servos 
+// Servos pins.
 #define Servo_arm_wrist_pitch           2   // Servo control pin for arm wrist pitch.
 #define Servo_arm_gripper_claw          3   // Servo control pin for arm gripper claw.
 #define Servo_science_microscope        4   // Servo control pin for science microscope.
 #define Servo_science_dispencer_extern  5   // Servo control pin for extern dispencer.
 #define Servo_science_dispencer_intern  6   // Servo control pin for intern dispencer.
 
+// Servos objects.
+Servo Servo_arm_wrist_pitch_obj;
+Servo Servo_arm_gripper_claw_obj;
+Servo Servo_science_microscope_ob;
+Servo Servo_science_dispencer_extern_obj;
+Servo Servo_science_dispencer_intern_obj;
+
+
+// I2C pins. 
 #define I2C_SCL SCL     // I2C communication pin
 #define I2C_SDA SDA     // I2C communication pin
 
@@ -113,11 +128,10 @@ const uint16_t serverPort = 11411;      // Master rosserial socket server port.
 // Reboot for mega2560
 void(* reboot_funct) (void) = 0; // Reboot
 
-// do nothing
-#define CPU_RESTART ;
-
 // Motor constants.
 #define Motors_HaltSpeed 64
+#define Motors_ScienceSlow 10
+#define Motors_ScienceFast 63
 #define Motors_MovementSpeedDiff 0x10
 #define Motors_Wheels_Amount_PerSide 3
 #define Motors_Arm_Amount 4
@@ -155,14 +169,22 @@ RoboClaw RoboClaw_Arm_Science = RoboClaw(&Serial_Arm_Science, Timeout_Arm_Scienc
 
 #define topic_watchdog                          "/watchdog_topic"
 
+#define topic_gps                               "/gps/actual"
+
 #define topic_queue_size    1
 
+
+// GPS CONSTANTS.
+#define gps_min_amount 2    // MIN AMOUNT OF SATELITES FOR IT TO BE REGISTERED AND PUBLISHED.
 
 /* Global variables. */
 // ROS NodeHandler.
 ros::NodeHandle nh;
 
-// ROS Subscribers
+// Ros msgs.
+sensor_msgs::NavSatFix gps_msg;
+
+// ROS Subscribers.
 ros::Subscriber<std_msgs::UInt16> sub_motors_wheels(topic_motors_wheels, &motorsWheelsCb);
 ros::Subscriber<std_msgs::UInt8> sub_motors_arm(topic_motors_arm, &motorsArmCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_arm_wristPitch (topic_servo_arm_wristPitch, &servoArmWristPitchCb);
@@ -172,16 +194,24 @@ ros::Subscriber<std_msgs::UInt8> sub_servo_science_microscope (topic_servo_scien
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_exterior (topic_servo_science_dispenser_exterior, &servoScienceDispenserExteriorCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_interior (topic_servo_science_dispenser_interior, &servoScienceDispenserInteriorCb);
 
-ros::Subscriber<std_msgs::Empty> subWatchdog (topic_watchdog, &watchdogFunction);
+ros::Subscriber<std_msgs::Empty> sub_watchdog (topic_watchdog, &watchdogFunction);
+
+// ROS Publishers.
+ros::Publisher pub_gps(topic_gps, &gps_msg);
 
 // Watchdog varables.
 unsigned long watchPrevTime;
 unsigned long ledPrevTime;
 unsigned long actualTime;
 
-
 // Flags.
 bool driversReady = false;
+bool publishGPS = true;
+
+// Auxiliar variables.
+String auxString;
+uint16_t auxUint16;
+
 
 // // Testing.
 // uint32_t auxUInt32;
@@ -240,7 +270,15 @@ void setupEthernet(void){
 void setupSerials(void){
     Serial_USB.begin(Baudrate_USB);
     Serial_Sensors_UART.begin(Baudrate_Sensors_UART);
-    delay(400);
+    delay(100);
+}
+
+void setupServos(void){
+    Servo_arm_wrist_pitch_obj.attach(Servo_arm_wrist_pitch);
+    Servo_arm_gripper_claw_obj.attach(Servo_arm_gripper_claw);
+    Servo_science_microscope_ob.attach(Servo_science_microscope);
+    Servo_science_dispencer_extern_obj.attach(Servo_science_dispencer_extern);
+    Servo_science_dispencer_intern_obj.attach(Servo_science_dispencer_intern);
 }
 
 // Defines the setup configuration of the GPIO pins.
@@ -252,6 +290,8 @@ void setupGPIO(void){
     digitalWrite(LED_NOTIFICATION, HIGH);
     digitalWrite(LED_NOTIFICATION1, LOW);
     digitalWrite(LED_NOTIFICATION2, LOW);
+
+    
 }
 
 // Defines the setup configuration of the ROS environment.
@@ -266,7 +306,8 @@ void setupRos(void){
     nh.subscribe(sub_servo_science_microscope);
     nh.subscribe(sub_servo_science_dispenser_exterior);
     nh.subscribe(sub_servo_science_dispenser_interior);
-    nh.subscribe(subWatchdog);
+    nh.subscribe(sub_watchdog);
+    nh.advertise(pub_gps); 
 }
 
 // Minimal setup function.
@@ -295,6 +336,8 @@ void loop(void){
         ledPrevTime = actualTime;
         togglePin(LED_NOTIFICATION1);
     }
+
+    GPSPublisher();
 
     nh.spinOnce();
     delay(10);
@@ -326,11 +369,11 @@ void motorsArmCb( const std_msgs::UInt8 &msg){
 }
 
 void servoArmWristPitchCb( const std_msgs::UInt8 &msg){
-
+    Servo_arm_wrist_pitch_obj.write(msg.data);
 }
 
 void servoArmGripperCb( const std_msgs::UInt8 &msg){
-
+    Servo_arm_gripper_claw_obj.write(msg.data);
 }
 
 // Callback function for Science motors.
@@ -339,23 +382,23 @@ void motorsScienceCb( const std_msgs::UInt8 &msg){
     for (uint8_t i = 0; i < Motors_Science_Amount; i++){
         if (data & (0x02 << (Motors_Science_Amount - 1 - i))){
             if (data & (0x01 << (Motors_Science_Amount - 1 - i)))
-                RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed + Motors_MovementSpeedDiff);
+                RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed + Motors_ScienceFast);
             else 
-                RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed - Motors_MovementSpeedDiff);
+                RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed - Motors_ScienceSlow);
         } else
             RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed);
     }
 }
 
 void servoScienceMicroscopeCb( const std_msgs::UInt8 &msg){
-
+    Servo_science_microscope_ob.write(msg.data);
 }
 
 void servoScienceDispenserExteriorCb( const std_msgs::UInt8 &msg){
-
+    Servo_science_dispencer_extern_obj.write(msg.data);
 }
 void servoScienceDispenserInteriorCb( const std_msgs::UInt8 &msg){
-
+    Servo_science_dispencer_intern_obj.write(msg.data);
 }
 
 // In case of something failing, it stops everything, and reboots itself. 
@@ -374,4 +417,66 @@ void haltMovements(void){
         RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Arm[i], Motors_HaltSpeed);
     for (int i = 0; i < Motors_Science_Amount; i++)
         RoboClaw_Arm_Science.ForwardBackwardM1(Motors_Science[i], Motors_HaltSpeed);
+}
+
+// Gets the GPS information and publishes it to it's topic.
+void GPSPublisher(void){
+    auxString = Serial_Sensors_UART.readStringUntil(',');
+    if (auxString == "$GPGGA"){
+        publishGPS = true;
+        // UTC.
+        Serial_Sensors_UART.readStringUntil(','); 
+
+        // LATITUDE.
+        auxString = Serial_Sensors_UART.readStringUntil(',');
+        auxUint16 = auxString.toInt()/100;
+        gps_msg.latitude = auxString.toFloat() - auxUint16*100;
+        gps_msg.latitude /= 60;
+        gps_msg.latitude += auxUint16;
+        if (Serial_Sensors_UART.readStringUntil(',') == "S")
+            gps_msg.latitude *= -1;
+        
+        // LONGITUDE.
+        auxString = Serial_Sensors_UART.readStringUntil(',');
+        auxUint16 = auxString.toInt()/100;
+        gps_msg.longitude = auxString.toFloat() - auxUint16*100;
+        gps_msg.longitude /= 60;
+        gps_msg.longitude += auxUint16;
+        if (Serial_Sensors_UART.readStringUntil(',') == "W")
+            gps_msg.longitude *= -1;
+
+        // QUALITY.
+        if (Serial_Sensors_UART.readStringUntil(',') == "0")
+            publishGPS = false;
+        
+        // QUANTITY.
+        if (Serial_Sensors_UART.readStringUntil(',').toInt() < gps_min_amount)
+            publishGPS = false;
+
+        // HDOP.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        // ALTITUDE.
+        gps_msg.altitude = Serial_Sensors_UART.readStringUntil(',').toFloat();
+
+        // ALT-UNITS.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        // UNDULATION.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        // UND-UNITS.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        // AGE.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        // STN ID.
+        Serial_Sensors_UART.readStringUntil(',');
+
+        if (publishGPS){
+            pub_gps.publish( &gps_msg);
+        }
+    }
+    Serial_Sensors_UART.readStringUntil('\n');
 }

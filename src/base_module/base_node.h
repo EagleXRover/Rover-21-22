@@ -45,17 +45,17 @@
 
 #define topic_queue_size    1
 
-const uint8_t limit_servo_arm_wristpitch[2] = {45, 135};
+const uint8_t limit_servo_arm_wristpitch[2] = {0, 180};
 const uint8_t limit_servo_arm_gripper[2] = {45, 135};
-const uint8_t limit_servo_science_microscope[2] = {45, 135};
-const uint8_t limit_servo_science_dispenser_exterior[2] = {45, 135};
-const uint8_t limit_servo_science_dispenser_interior[2] = {45, 135};
+const uint8_t limit_servo_science_microscope[2] = {0, 180};
+const uint8_t limit_servo_science_dispenser_exterior[2] = {5, 175};
+const uint8_t limit_servo_science_dispenser_interior[2] = {5, 175};
 
 const uint8_t speed_servo_arm_wristpitch = 5;
 const uint8_t speed_servo_arm_gripper = 5;
 const uint8_t speed_servo_science_microscope = 5;
-const uint8_t speed_servo_science_dispenser_exterior = 5;
-const uint8_t speed_servo_science_dispenser_interior = 5;
+const uint8_t speed_servo_science_dispenser_exterior = 178;
+const uint8_t speed_servo_science_dispenser_interior = 178;
 
 class BaseNode{
     protected:
@@ -79,8 +79,8 @@ class BaseNode{
             pos_servo_arm_wristPitch = 90, 
             pos_servo_arm_gripper = 90, 
             pos_servo_science_microscope = 90, 
-            pos_servo_science_dispenser_exterior = 90, 
-            pos_servo_science_dispenser_interior = 90;
+            pos_servo_science_dispenser_exterior = 2, 
+            pos_servo_science_dispenser_interior = 2;
         uint16_t speed_motors_Wheels = 0x4040;
     
     public:
