@@ -340,11 +340,8 @@ void setupRos(void){
 void setup(void){
     setupGPIO();
     setupSerials();
-    setupSensors();
-    
     setupEthernet();
     setupDrivers();
-    
     delay(1000);
     setupRos();
     watchPrevTime = millis();
@@ -367,7 +364,6 @@ void loop(void){
     }
 
     GPSPublisher();
-    CompassPublisher();
 
     nh.spinOnce();
     delay(10);
