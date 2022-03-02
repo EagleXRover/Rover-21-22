@@ -6,14 +6,21 @@
 /* Definitions of libraries. */
 #include <SPI.h>
 #include <Ethernet.h>
+
 #include "RoboClaw.h"
+
 #include <Servo.h>
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_LSM303_U.h>
 
 #define ROSSERIAL_ARDUINO_TCP // To use the TCP version of rosserial_arduino.
 
 /* Include ROS components. */
 #include <ros.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <std_msgs/Float32.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/UInt8.h>
 #include <std_msgs/Empty.h>
@@ -31,6 +38,7 @@ void setupEthernet(void);
 void setupSerials(void);
 void setupServos(void);
 void setupGPIO(void);
+void setupSensors(void);
 void setupRos(void);
 
 // Minimal Functions.
@@ -54,6 +62,7 @@ void haltMovements(void);
 
 // Sensing Functions.
 void GPSPublisher(void);
+void CompassPublisher(void);
 
 // Testing Functions.
 
@@ -66,9 +75,10 @@ void GPSPublisher(void);
 #define Timeout_Wheels      10000       // Timeout for Wheels drivers.
 #define Timeout_Arm_Science 10000       // Timeout for Arm & Science drivers.
 #define Timeout_Watchdog    3500        // Timeout for ros topic watchdog.
+#define Delay_Compass       25          // Delay on msecs between mag topic publishing.
 
 // LEDs Constants.
-#undef LED_BUILTIN
+#undef  LED_BUILTIN
 #define LED_NOTIFICATION    13          // Notification Led0.
 #define LED_NOTIFICATION1   12          // Notification Led1.
 #define LED_NOTIFICATION2   11          // Notification Led2.
@@ -169,6 +179,7 @@ RoboClaw RoboClaw_Arm_Science = RoboClaw(&Serial_Arm_Science, Timeout_Arm_Scienc
 
 #define topic_watchdog                          "/watchdog_topic"
 
+#define topic_compass                           "/gps/compass"
 #define topic_gps                               "/gps/actual"
 
 #define topic_queue_size    1
@@ -177,11 +188,16 @@ RoboClaw RoboClaw_Arm_Science = RoboClaw(&Serial_Arm_Science, Timeout_Arm_Scienc
 // GPS CONSTANTS.
 #define gps_min_amount 2    // MIN AMOUNT OF SATELITES FOR IT TO BE REGISTERED AND PUBLISHED.
 
+// 10 DOF CONSTANTS.
+Adafruit_LSM303_Mag_Unified mag = Adafruit_LSM303_Mag_Unified(30302);
+#define magnetic_declination 4.68
+
 /* Global variables. */
 // ROS NodeHandler.
 ros::NodeHandle nh;
 
 // Ros msgs.
+std_msgs::Float32 compass_msg;
 sensor_msgs::NavSatFix gps_msg;
 
 // ROS Subscribers.
@@ -197,11 +213,13 @@ ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_interior (topic_ser
 ros::Subscriber<std_msgs::Empty> sub_watchdog (topic_watchdog, &watchdogFunction);
 
 // ROS Publishers.
+ros::Publisher pub_compass(topic_compass, &compass_msg);
 ros::Publisher pub_gps(topic_gps, &gps_msg);
 
 // Watchdog varables.
 unsigned long watchPrevTime;
 unsigned long ledPrevTime;
+unsigned long compassPrevTime;
 unsigned long actualTime;
 
 // Flags.
@@ -294,6 +312,12 @@ void setupGPIO(void){
     
 }
 
+void setupSensors(void){
+    if (!mag.begin()){
+        reboot();
+    }
+}
+
 // Defines the setup configuration of the ROS environment.
 void setupRos(void){
     nh.getHardware()->setConnection(server, serverPort);
@@ -307,7 +331,9 @@ void setupRos(void){
     nh.subscribe(sub_servo_science_dispenser_exterior);
     nh.subscribe(sub_servo_science_dispenser_interior);
     nh.subscribe(sub_watchdog);
+    nh.advertise(pub_compass); 
     nh.advertise(pub_gps); 
+
 }
 
 // Minimal setup function.
@@ -479,4 +505,17 @@ void GPSPublisher(void){
         }
     }
     Serial_Sensors_UART.readStringUntil('\n');
+}
+
+// Gets the orientation of the rover respective to the magnethic north.
+void CompassPublisher(void){
+    sensors_event_t event;
+    mag.getEvent(&event);
+    float mag_x = event.magnetic.x;
+    float mag_y = event.magnetic.y;
+    float mag_z = event.magnetic.z;
+    float angle_rad = atan2(mag_x, mag_y);
+    angle_rad += ((magnetic_declination / 180) * M_PI);
+    compass_msg.data = compass_msg.data*0.85 + angle_rad*0.15;
+    pub_compass.publish( &compass_msg);
 }
