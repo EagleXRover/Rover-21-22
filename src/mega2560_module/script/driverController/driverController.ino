@@ -518,7 +518,7 @@ void CompassPublisher(void){
     float mag_x = event.magnetic.x;
     float mag_y = event.magnetic.y;
     float mag_z = event.magnetic.z;
-    float angle_rad = atan2(mag_x, mag_y);
+    float angle_rad = -atan2(mag_x, mag_y);
     angle_rad += ((magnetic_declination / 180) * M_PI);
     compass_msg.data = compass_msg.data*0.85 + angle_rad*0.15;
     pub_compass.publish( &compass_msg);
