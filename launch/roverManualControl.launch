@@ -1,0 +1,17 @@
+<launch>
+
+        <node pkg="rosserial_server" name="socket_node" type="socket_node"/>
+
+        <machine
+                name="larry"
+                address="10.0.0.5"
+                env-loader="~/catkin_ws/launcher.sh"
+                default="true"
+                user="larry"
+        />
+        <node machine="larry" pkg="joy" name="joy_node" type="joy_node"/>
+        <node machine="larry" pkg="eaglex_rover" name="base_module" type="base_module"/>
+
+</launch>
+
+
