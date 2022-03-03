@@ -1,0 +1,17 @@
+<launch>
+        <node pkg="eaglex_rover"
+                type="docker.sh" name="docker"
+        />
+    <!--mapviz-->
+    <machine
+        name="garcia"
+        address="10.0.0.21"
+        env-loader="~/catkin_ws/launcher.sh"
+        default="true"
+        user="garcia"
+    />
+    <group >
+        <include  machine="garcia" file="$(find mapviz)/launch/mapviz.launch">
+        </include>
+    </group>
+</launch>
