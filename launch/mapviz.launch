@@ -1,7 +1,5 @@
 <launch>
-        <node pkg="eaglex_rover"
-                type="docker.sh" name="docker"
-        />
+
     <!--mapviz-->
     <machine
         name="garcia"
@@ -11,7 +9,7 @@
         user="garcia"
     />
     <group >
-        <include  machine="garcia" file="$(find mapviz)/launch/mapviz.launch">
+        <include file="$(find mapviz)/launch/mapviz.launch">
         </include>
     </group>
 </launch>
