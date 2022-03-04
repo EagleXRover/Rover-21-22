@@ -70,6 +70,9 @@ void goalCb(const sensor_msgs::NavSatFix &msg){
     goal_rot = atan2(goal_lon, goal_lat);
 
     delta_rot = goal_rot - current_rot;
+
+    if (delta_rot < -PI) delta_rot += (2 * PI);
+    if (delta_rot > PI) delta_rot += (-2 * PI);
 }
 
 
