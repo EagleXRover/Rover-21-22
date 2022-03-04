@@ -77,23 +77,26 @@ int main(int argc, char** argv){
     ros::init(argc, argv, nodeName);
     ros::NodeHandle n;
 
-    ros::Subscriber sub = n.subscribe(topic_gps_now, topic_queue_size, gpsCb);
-    ros::Subscriber sub = n.subscribe(topic_compass, topic_queue_size, rotCb);
-    ros::Subscriber sub = n.subscribe(topic_gps_goal, topic_queue_size, goalCb);
+    ros::Subscriber sub_gpsNow = n.subscribe(topic_gps_now, topic_queue_size, gpsCb);
+    ros::Subscriber sub_compass = n.subscribe(topic_compass, topic_queue_size, rotCb);
+    ros::Subscriber sub_gpsGoal = n.subscribe(topic_gps_goal, topic_queue_size, goalCb);
 
 
     ros::Publisher pub_watchdog = n.advertise<std_msgs::Empty>(topic_watchdog, topic_queue_size, true);
     ros::Publisher pub_rotation = n.advertise<std_msgs::Empty>(topic_gps_delta_rot, topic_queue_size, true);
     ros::Publisher pub_distance = n.advertise<std_msgs::Empty>(topic_gps_delta_dist, topic_queue_size, true);
     std_msgs::Empty watchdogMsg;
+    std_msgs::Float32 auxFloat32msg;
 
     ros::Rate loop_rate(10);
     while (ros::ok()){
         ros::spinOnce();
 
         pub_watchdog.publish(watchdogMsg);
-        pub_rotation.publish(delta_rot);
-        pub_watchdog.publish(delta_distance);
+        auxFloat32msg.data = delta_rot;
+        pub_rotation.publish(auxFloat32msg);
+        auxFloat32msg.data = delta_distance;
+        pub_watchdog.publish(auxFloat32msg);
 
         loop_rate.sleep();
     }
