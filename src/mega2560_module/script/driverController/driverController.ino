@@ -96,7 +96,7 @@ void CompassPublisher(void);
 byte mac[6] = {                         // Ethernet MAC adress.
     0x80, 0x69, 0x69, 0x69, 0x69, 0x09 
 };   
-IPAddress server(10,0,0,20);            // Master IP.
+IPAddress server(10,0,0,4);             // Master IP.
 const uint16_t serverPort = 11411;      // Master rosserial socket server port.
 
 // Serial Ports rename.
