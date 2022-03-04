@@ -22,6 +22,10 @@ add_executable(base_module src/base_module/base_module.cpp)
 target_link_libraries(base_module ${catkin_LIBRARIES})
 # add_dependencies(base_module eaglex_rover_generate_messages_cpp)
 
+add_executable(delta_coordinates src/autonomy_module/delta_coordinates/delta_coordinates.cpp)
+target_link_libraries(delta_coordinates ${catkin_LIBRARIES})
+# add_dependencies(delta_coordinates eaglex_rover_generate_messages_cpp)
+
 
 # add_executable(talker src/drivers_module/scripts/tst/talker.cpp)
 # target_link_libraries(talker ${catkin_LIBRARIES})
