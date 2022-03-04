@@ -1,16 +1,17 @@
 <launch>
-
-    <!--mapviz-->
-    <machine
-        name="garcia"
-        address="10.0.0.21"
-        env-loader="~/catkin_ws/launcher.sh"
-        default="true"
-        user="garcia"
-    />
-    <group >
-
-        <include   machine="garcia"  file="$(find mapviz)/launch/mapviz.launch">
-        </include>
-    </group>
+    <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /map /check 100"  />
+    <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
+        <param name="local_xy_frame" value="/map"/>
+        <param name="local_xy_origin" value="swri"/>
+        <rosparam param="local_xy_origins">
+            [{ name: swri,
+             latitude: 20.615746, <!-- change this -->
+             longitude: -100.402686, <!-- change this -->
+             altitude: 129.69,
+             heading: 0.0}]
+        </rosparam>
+    </node>
+   <node name="mapviz" type="mapviz" pkg="mapviz">
+        <param name="config" value="$(find eaglex_rover)/src/mapViz/mapviz_config.mvc"/>
+    </node>
 </launch>

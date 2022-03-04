@@ -56,6 +56,7 @@ void motorsScienceCb( const std_msgs::UInt8&);
 void servoScienceMicroscopeCb( const std_msgs::UInt8&);
 void servoScienceDispenserExteriorCb( const std_msgs::UInt8&);
 void servoScienceDispenserInteriorCb( const std_msgs::UInt8&);
+void notificationRGBCb ( const std_msgs::UInt8&);
 void watchdogFunction(void);
 
 void haltMovements(void);
@@ -177,6 +178,8 @@ RoboClaw RoboClaw_Arm_Science = RoboClaw(&Serial_Arm_Science, Timeout_Arm_Scienc
 #define topic_servo_science_dispenser_exterior  "/science/servos/dispenser/exterior"
 #define topic_servo_science_dispenser_interior  "/science/servos/dispenser/interior"
 
+#define topic_notificationRGB                   "/notification/rgb"
+
 #define topic_watchdog                          "/watchdog_topic"
 
 #define topic_compass                           "/gps/compass"
@@ -209,6 +212,8 @@ ros::Subscriber<std_msgs::UInt8> sub_motors_science (topic_motors_science, &moto
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_microscope (topic_servo_science_microscope, &servoScienceMicroscopeCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_exterior (topic_servo_science_dispenser_exterior, &servoScienceDispenserExteriorCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_interior (topic_servo_science_dispenser_interior, &servoScienceDispenserInteriorCb);
+
+ros::Subscriber<std_msgs::UInt8> sub_notificationRGB (topic_notificationRGB, &notificationRGBCb);
 
 ros::Subscriber<std_msgs::Empty> sub_watchdog (topic_watchdog, &watchdogFunction);
 
@@ -427,8 +432,15 @@ void servoScienceMicroscopeCb( const std_msgs::UInt8 &msg){
 void servoScienceDispenserExteriorCb( const std_msgs::UInt8 &msg){
     Servo_science_dispencer_extern_obj.write(msg.data);
 }
+
 void servoScienceDispenserInteriorCb( const std_msgs::UInt8 &msg){
     Servo_science_dispencer_intern_obj.write(msg.data);
+}
+
+void notificationRGBCb ( const std_msgs::UInt8 &msg){
+    analogWrite(RGB_LED_NOTIFICATION_R, 1024 * (msg.data & 1<<2));
+    analogWrite(RGB_LED_NOTIFICATION_G, 1024 * (msg.data & 1<<1));
+    analogWrite(RGB_LED_NOTIFICATION_B, 1024 * (msg.data & 1<<0));
 }
 
 // In case of something failing, it stops everything, and reboots itself. 
