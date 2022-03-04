@@ -9,7 +9,8 @@
         user="garcia"
     />
     <group >
-        <include file="$(find mapviz)/launch/mapviz.launch">
+
+        <include   machine="garcia"  file="$(find mapviz)/launch/mapviz.launch">
         </include>
     </group>
 </launch>
