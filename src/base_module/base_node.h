@@ -45,7 +45,7 @@
 
 #define topic_queue_size    1
 
-const uint8_t limit_servo_arm_wristpitch[2] = {0, 180};
+const uint8_t limit_servo_arm_wristpitch[2] = {30, 90};
 const uint8_t limit_servo_arm_gripper[2] = {45, 135};
 const uint8_t limit_servo_science_microscope[2] = {0, 180};
 const uint8_t limit_servo_science_dispenser_exterior[2] = {5, 175};

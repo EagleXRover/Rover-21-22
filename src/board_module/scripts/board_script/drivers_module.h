@@ -45,7 +45,7 @@ const uint8_t Motors_Wheels_Right[Motors_Wheels_Amount_PerSide] = {     // Wheel
     0x81, 0x83, 0x85
 };
 const uint8_t Motors_Arm[Motors_Arm_Amount] = {                         // Arm motors array
-    0x80, 0x81, 0x82, 0x83
+    0x81, 0x82, 0x80, 0x83
 };
 const uint8_t Motors_Science[Motors_Science_Amount] = {                 // Science motors array
     0x84
