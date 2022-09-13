@@ -57,7 +57,7 @@ void servoScienceMicroscopeCb( const std_msgs::UInt8&);
 void servoScienceDispenserExteriorCb( const std_msgs::UInt8&);
 void servoScienceDispenserInteriorCb( const std_msgs::UInt8&);
 void notificationRGBCb ( const std_msgs::UInt8&);
-void watchdogFunction(void);
+void watchdogUpdater(void);
 
 void haltMovements(void);
 
@@ -215,7 +215,7 @@ ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_interior (topic_ser
 
 ros::Subscriber<std_msgs::UInt8> sub_notificationRGB (topic_notificationRGB, &notificationRGBCb);
 
-ros::Subscriber<std_msgs::Empty> sub_watchdog (topic_watchdog, &watchdogFunction);
+ros::Subscriber<std_msgs::Empty> sub_watchdog (topic_watchdog, &watchdogUpdater);
 
 // ROS Publishers.
 ros::Publisher pub_compass(topic_compass, &compass_msg);
@@ -444,7 +444,7 @@ void notificationRGBCb ( const std_msgs::UInt8 &msg){
 }
 
 // In case of something failing, it stops everything, and reboots itself. 
-void watchdogFunction(void){
+void watchdogUpdater(void){
     watchPrevTime = millis();
 }
 

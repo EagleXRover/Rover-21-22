@@ -1,7 +1,8 @@
 /*
-  drivers_module.h - Library for the control of the 
-  Roboclaw drivers for the wheels and arm.
+  drivers_module.h - Library for the control of the Roboclaw 
+  drivers on the wheels and arm.
   Created by CatBookshelf, April 1, 2022.
+  Last updated, September 13, 2022.
 */
 
 #ifndef DRIVERS_MODULE_H

@@ -45,7 +45,7 @@ void motorsScienceCb( const std_msgs::UInt8&);
 void servoScienceMicroscopeCb( const std_msgs::UInt8&);
 void servoScienceDispenserExteriorCb( const std_msgs::UInt8&);
 void servoScienceDispenserInteriorCb( const std_msgs::UInt8&);
-void watchdogFunction(void);
+void watchdogUpdater(void);
 
 void haltMovements(void);
 
@@ -152,7 +152,7 @@ ros::Subscriber<std_msgs::UInt8> sub_servo_science_microscope (topic_servo_scien
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_exterior (topic_servo_science_dispenser_exterior, &servoScienceDispenserExteriorCb);
 ros::Subscriber<std_msgs::UInt8> sub_servo_science_dispenser_interior (topic_servo_science_dispenser_interior, &servoScienceDispenserInteriorCb);
 
-ros::Subscriber<std_msgs::Empty> subWatchdog (topic_watchdog, &watchdogFunction);
+ros::Subscriber<std_msgs::Empty> subWatchdog (topic_watchdog, &watchdogUpdater);
 
 // Watchdog varables.
 unsigned long watchPrevTime;
@@ -339,7 +339,7 @@ void servoScienceDispenserInteriorCb( const std_msgs::UInt8 &msg){
 }
 
 // In case of something failing, it stops everything, and reboots itself. 
-void watchdogFunction(void){
+void watchdogUpdater(void){
     watchPrevTime = millis();
 }
 

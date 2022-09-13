@@ -8,6 +8,14 @@
 
 #include <Arduino.h>
 
+// List of board types.
+#define ARDUINO_BOARD 0
+#define TEENSY_BOARD 1
+
+// Define working modes.
+#define DEBUG_ON true             // Defines if the serial usb output is on.
+#define BOARD_TYPE ARDUINO_BOARD  // Defines board type.
+
 // LEDs Constants.
 #undef  LED_BUILTIN
 #define LED_NOTIFICATION    13          // Notification Led0.
@@ -33,8 +41,5 @@
 // I2C pins. 
 #define I2C_SCL SCL     // I2C communication pin
 #define I2C_SDA SDA     // I2C communication pin
-
-unsigned long actualTime;
-
 
 #endif
